@@ -1,0 +1,104 @@
+service: products-api-v3
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: dev
+  region: ap-southeast-2
+
+functions:
+  # authorizer:
+  #   handler: authorizer.handler
+
+  createProduct:
+    handler: handler.createProduct
+    environment:
+      PRODUCTS_TABLE_NAME: !Ref ProductsTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: "*"
+    events:
+      - http:
+          method: post
+          path: products
+          # authorizer: authorizer
+
+  updateProduct:
+    handler: handler.updateProduct
+    environment:
+      PRODUCTS_TABLE_NAME: !Ref ProductsTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+        Resource: "*"
+    events:
+      - http:
+          method: put
+          path: products/{id}
+          # authorizer: authorizer
+
+  deleteProduct:
+    handler: handler.deleteProduct
+    environment:
+      PRODUCTS_TABLE_NAME: !Ref ProductsTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource: "*"
+    events:
+      - http:
+          method: delete
+          path: products/{id}
+          # authorizer: authorizer
+
+  getAllProducts:
+    handler: handler.getAllProducts
+    environment:
+      PRODUCTS_TABLE_NAME: !Ref ProductsTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+        Resource: "*"
+    events:
+      - http:
+          method: get
+          path: products
+          # authorizer: authorizer
+
+plugins:
+  - serverless-iam-roles-per-function
+
+# you can add CloudFormation resource templates here
+resources:
+  Resources:
+    ProductsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ProductsTable
+        AttributeDefinitions:
+          - AttributeName: productsId
+            AttributeType: S
+          - AttributeName: title
+            AttributeType: S
+        KeySchema:
+          - AttributeName: productsId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        GlobalSecondaryIndexes:
+          - IndexName: ProductsByNameIndex
+            KeySchema:
+              - AttributeName: title
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 5
+              WriteCapacityUnits: 5
