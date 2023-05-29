@@ -8,8 +8,8 @@ provider:
   region: ap-southeast-2
 
 functions:
-  # authorizer:
-  #   handler: authorizer.handler
+  authorizer:
+    handler: authorizer.handler
 
   createProduct:
     handler: handler.createProduct
@@ -24,7 +24,7 @@ functions:
       - http:
           method: post
           path: products
-          # authorizer: authorizer
+          authorizer: authorizer
 
   updateProduct:
     handler: handler.updateProduct
@@ -39,7 +39,7 @@ functions:
       - http:
           method: put
           path: products/{id}
-          # authorizer: authorizer
+          authorizer: authorizer
 
   deleteProduct:
     handler: handler.deleteProduct
@@ -54,7 +54,7 @@ functions:
       - http:
           method: delete
           path: products/{id}
-          # authorizer: authorizer
+          authorizer: authorizer
 
   getAllProducts:
     handler: handler.getAllProducts
@@ -69,7 +69,7 @@ functions:
       - http:
           method: get
           path: products
-          # authorizer: authorizer
+          authorizer: authorizer
 
 plugins:
   - serverless-iam-roles-per-function
