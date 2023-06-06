@@ -1,3 +1,12 @@
+const { CognitoJwtVerifier } = require("aws-jwt-verify");
+
+// Verifier that expects valid access tokens:
+const verifier = CognitoJwtVerifier.create({
+  userPoolId: "us-east-1_5YeDwmvw7",
+  tokenUse: "id",
+  clientId: "4dfpiobenmqi04lmil96t5qfcj",
+});
+
 const generatePolicy = (principalId, effect, resource) => {
   var authReponse = {};
   authReponse.principalId = principalId;
@@ -17,21 +26,31 @@ const generatePolicy = (principalId, effect, resource) => {
   authReponse.context = {
     foo: "bar",
   };
-  console.log(JSON.stringify(authReponse));
+  console.log("authReponse--", JSON.stringify(authReponse));
   return authReponse;
 };
 
-exports.handler = (event, context, callback) => {
+exports.handler = async (event, context, callback) => {
   // lambda authorizer code
   var token = event.authorizationToken; // "allow" or "deny"
-  switch (token) {
-    case "allow":
-      callback(null, generatePolicy("user", "Allow", event.methodArn));
-      break;
-    case "deny":
-      callback(null, generatePolicy("user", "Deny", event.methodArn));
-      break;
-    default:
-      callback("Error: Invalid token");
+  console.log("Token:", token);
+
+  try {
+    const payload = await verifier.verify(token);
+    console.log("Token is valid. Payload:", JSON.stringify(payload));
+    callback(null, generatePolicy("user", "Allow", event.methodArn));
+  } catch {
+    console.log("Token not valid!");
+    callback("Error: Invalid token");
   }
+  // switch (token) {
+  //   case "allow":
+  //
+  //     break;
+  //   case "deny":
+  //     callback(null, generatePolicy("user", "Deny", event.methodArn));
+  //     break;
+  //   default:
+  //     callback("Error: Invalid token");
+  // }
 };

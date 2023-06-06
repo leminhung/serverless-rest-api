@@ -8,7 +8,7 @@ const {
 } = require("@aws-sdk/lib-dynamodb");
 
 const ddbDocClient = new DynamoDBClient({
-  region: process.env.AWS_REGION || "ap-southeast-2",
+  region: process.env.AWS_REGION || "us-east-1",
 });
 const PRODUCTS_TABLE_NAME = process.env.PRODUCTS_TABLE_NAME || "ProductsTable";
 const send = (statusCode, data) => {
@@ -38,6 +38,8 @@ module.exports.createProduct = async (event) => {
 
 module.exports.updateProduct = async (event) => {
   let productsId = event.pathParameters.id;
+
+  console.log("productId--", productsId);
   let data = JSON.parse(event.body);
   try {
     const params = {
@@ -57,6 +59,7 @@ module.exports.updateProduct = async (event) => {
     await ddbDocClient.send(new UpdateCommand(params));
     return send(200, data);
   } catch (err) {
+    console.log("err--", err);
     return send(500, err.message);
   }
 };
@@ -77,6 +80,7 @@ module.exports.deleteProduct = async (event, context, cb) => {
 };
 
 module.exports.getAllProducts = async (event, context, cb) => {
+  console.log("hello hung, this is test getAllProducts");
   try {
     const params = {
       TableName: PRODUCTS_TABLE_NAME,
