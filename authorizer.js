@@ -1,5 +1,8 @@
 const { CognitoJwtVerifier } = require("aws-jwt-verify");
 
+// const COGNITO_USERPOOL_ID = process.env.COGNITO_USERPOOL_ID;
+// const COGNITO_WEB_CLIENT_ID = process.env.COGNITO_WEB_CLIENT_ID;
+
 // Verifier that expects valid access tokens:
 const verifier = CognitoJwtVerifier.create({
   userPoolId: "us-east-1_5YeDwmvw7",

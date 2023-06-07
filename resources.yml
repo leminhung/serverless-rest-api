@@ -1,0 +1,53 @@
+# Products dynamodb table
+ProductsTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: ProductsTable
+    AttributeDefinitions:
+      - AttributeName: productsId
+        AttributeType: S
+      - AttributeName: title
+        AttributeType: S
+    KeySchema:
+      - AttributeName: productsId
+        KeyType: HASH
+    ProvisionedThroughput:
+      ReadCapacityUnits: 5
+      WriteCapacityUnits: 5
+    GlobalSecondaryIndexes:
+      - IndexName: ProductsByNameIndex
+        KeySchema:
+          - AttributeName: title
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+# # Cognito user pool
+# cognitoUserPool:
+#   Type: AWS::Cognito::UserPool
+#   Properties:
+#     UserPoolName: MyProductsUserPool
+
+# # User pool web client
+# cognitoUserPoolWebClient:
+#   Type: AWS::Cognito::UserPoolClient
+#   Properties:
+#     UserPoolId: !Ref cognitoUserPool
+#     ClientName: web
+
+# # User pool domain
+# cognitoUserPoolDomain:
+#   Type: AWS::Cognito::UserPoolDomain
+#   Properties:
+#     UserPoolId: !Ref cognitoUserPool
+#     Domain: myproductscd
+
+# # Application parameters
+# userPoolArnParam:
+#   Type: AWS::SSM::Parameter
+#   Properties:
+#     Name: /products/dev/userPoolArn
+#     Type: String
+#     Value: !GetAtt cognitoUserPool.Arn

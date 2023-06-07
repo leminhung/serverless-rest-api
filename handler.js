@@ -80,7 +80,7 @@ module.exports.deleteProduct = async (event, context, cb) => {
 };
 
 module.exports.getAllProducts = async (event, context, cb) => {
-  console.log("hello hung, this is test getAllProducts");
+  console.log("event--", JSON.stringify(event));
   try {
     const params = {
       TableName: PRODUCTS_TABLE_NAME,

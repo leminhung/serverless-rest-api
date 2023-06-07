@@ -10,6 +10,9 @@ provider:
 functions:
   authorizer:
     handler: authorizer.handler
+    # environment:
+    #   COGNITO_USERPOOL_ID: !Ref cognitoUserPool
+    #   COGNITO_WEB_CLIENT_ID: !Ref cognitoUserPoolWebClient
 
   createProduct:
     handler: handler.createProduct
@@ -69,36 +72,13 @@ functions:
       - http:
           method: get
           path: products
-          authorizer: authorizer
+          authorizer:
+            name: userpool_authorizer
+            arn: arn:aws:cognito-idp:us-east-1:644877347704:userpool/us-east-1_5YeDwmvw7
 
 plugins:
   - serverless-iam-roles-per-function
 
 # you can add CloudFormation resource templates here
 resources:
-  Resources:
-    ProductsTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ProductsTable
-        AttributeDefinitions:
-          - AttributeName: productsId
-            AttributeType: S
-          - AttributeName: title
-            AttributeType: S
-        KeySchema:
-          - AttributeName: productsId
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
-        GlobalSecondaryIndexes:
-          - IndexName: ProductsByNameIndex
-            KeySchema:
-              - AttributeName: title
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 5
-              WriteCapacityUnits: 5
+  Resources: ${file(resources.yml)}
